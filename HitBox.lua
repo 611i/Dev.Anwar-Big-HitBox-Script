@@ -4,7 +4,7 @@ local localPlayer = Players.LocalPlayer
 
 local headSize = 20
 local hitboxEnabled = false
-local teamCheck = false
+local teamCheck = true -- فعّل تجاهل الفريق
 
 local screenGui = Instance.new("ScreenGui", game.CoreGui)
 screenGui.Name = "DevAnwar_GUI"
@@ -115,6 +115,7 @@ toggle.MouseButton1Click:Connect(function()
 				part.Transparency = 0
 				part.Material = Enum.Material.Plastic
 				part.BrickColor = BrickColor.new("Medium stone grey")
+				part.CanCollide = true
 			end
 		end
 	end
