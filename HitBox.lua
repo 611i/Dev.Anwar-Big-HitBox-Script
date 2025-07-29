@@ -4,13 +4,12 @@ local localPlayer = Players.LocalPlayer
 
 local headSize = 20
 local hitboxEnabled = false
-local teamCheck = true -- فعّل تجاهل الفريق
+local teamCheck = true
 
 local screenGui = Instance.new("ScreenGui", game.CoreGui)
 screenGui.Name = "DevAnwar_GUI"
 screenGui.ResetOnSpawn = false
 
--- زر خارجي دائري
 local openButton = Instance.new("TextButton", screenGui)
 openButton.Size = UDim2.new(0, 60, 0, 60)
 openButton.Position = UDim2.new(0, 20, 0.5, -30)
@@ -24,9 +23,8 @@ openButton.AutoButtonColor = true
 openButton.Draggable = true
 Instance.new("UICorner", openButton).CornerRadius = UDim.new(1, 0)
 
--- القائمة الداخلية
 local frame = Instance.new("Frame", screenGui)
-frame.Size = UDim2.new(0, 300, 0, 170)
+frame.Size = UDim2.new(0, 300, 0, 210)
 frame.Position = UDim2.new(0.3, 0, 0.3, 0)
 frame.BackgroundColor3 = Color3.fromRGB(20, 20, 20)
 frame.Visible = false
@@ -40,6 +38,16 @@ title.Text = "made by: Anwar🇮🇶"
 title.TextColor3 = Color3.fromRGB(0, 255, 127)
 title.Font = Enum.Font.GothamBold
 title.TextSize = 18
+
+local updateLabel = Instance.new("TextLabel", frame)
+updateLabel.Size = UDim2.new(1, 0, 0, 20)
+updateLabel.Position = UDim2.new(0, 0, 0.9, 0)
+updateLabel.BackgroundTransparency = 1
+updateLabel.Text = "Version 1.1 - تم تحديث السكربت"
+updateLabel.TextColor3 = Color3.fromRGB(0, 255, 127)
+updateLabel.Font = Enum.Font.Gotham
+updateLabel.TextSize = 14
+updateLabel.TextXAlignment = Enum.TextXAlignment.Center
 
 local toggle = Instance.new("TextButton", frame)
 toggle.Position = UDim2.new(0.05, 0, 0.25, 0)
@@ -94,7 +102,7 @@ minimizeButton.MouseButton1Click:Connect(function()
 end)
 
 local tiktokLabel = Instance.new("TextLabel", frame)
-tiktokLabel.Position = UDim2.new(0.05, 0, 0.8, 0)
+tiktokLabel.Position = UDim2.new(0.05, 0, 0.75, 0)
 tiktokLabel.Size = UDim2.new(0.9, 0, 0.15, 0)
 tiktokLabel.BackgroundTransparency = 1
 tiktokLabel.Text = "TikTok: hf4_l@"
@@ -134,18 +142,29 @@ openButton.MouseButton1Click:Connect(function()
 end)
 
 RunService.RenderStepped:Connect(function()
-	if hitboxEnabled and localPlayer then
-		local myTeam = localPlayer.Team
-		for _, player in ipairs(Players:GetPlayers()) do
-			if player ~= localPlayer and player.Character and player.Character:FindFirstChild("HumanoidRootPart") then
+	if not hitboxEnabled or not localPlayer then return end
+
+	local myTeam = localPlayer.Team
+
+	for _, player in ipairs(Players:GetPlayers()) do
+		if player ~= localPlayer then
+			local char = player.Character
+			local hrp = char and char:FindFirstChild("HumanoidRootPart")
+
+			if hrp and char:IsDescendantOf(game) then
 				if not teamCheck or player.Team ~= myTeam then
-					local part = player.Character.HumanoidRootPart
-					part.Size = Vector3.new(headSize, headSize, headSize)
-					part.Transparency = 0.7
-					part.BrickColor = BrickColor.new("Lime green")
-					part.Material = Enum.Material.Neon
-					part.CanCollide = false
+					hrp.Size = Vector3.new(headSize, headSize, headSize)
+					hrp.Transparency = 0.8
+					hrp.BrickColor = BrickColor.new("Lime green")
+					hrp.Material = Enum.Material.Neon
+					hrp.CanCollide = false
 				end
+			elseif hrp then
+				hrp.Size = Vector3.new(2, 2, 1)
+				hrp.Transparency = 1
+				hrp.BrickColor = BrickColor.new("Medium stone grey")
+				hrp.Material = Enum.Material.Plastic
+				hrp.CanCollide = true
 			end
 		end
 	end
