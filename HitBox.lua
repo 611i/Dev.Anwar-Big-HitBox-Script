@@ -1,15 +1,130 @@
+--// بداية سكربت Dev.Anwar بنظام مفتاح متغير كل 48 ساعة + طلب مفتاح ثنائي اللغة
+
 local Players = game:GetService("Players")
 local RunService = game:GetService("RunService")
+local UserInputService = game:GetService("UserInputService")
 local localPlayer = Players.LocalPlayer
 
-local headSize = 20
-local hitboxEnabled = false
-local teamCheck = true
+-- المفاتيح المتغيرة كل 48 ساعة (كل يومين)
+local keys = {
+    "anwar12233",
+    "Anwar1lol1",
+    "anwar00011",
+    "000anwar1011"
+}
 
+local function getCurrentKey()
+    local currentTime = os.time()
+    local period = math.floor(currentTime / (48*60*60)) -- 48 ساعة بالثواني
+    local index = (period % #keys) + 1
+    return keys[index]
+end
+
+-- رابط المفتاح للنسخ
+local keyLink = "https://direct-link.net/1376498/WRpu4mqGF3OM"
+
+-- تخزين حالة التفعيل محلياً (لا يتم حفظه بالخادم)
+local activated = false
+
+-- إنشاء واجهة طلب المفتاح
 local screenGui = Instance.new("ScreenGui", game.CoreGui)
-screenGui.Name = "DevAnwar_GUI"
+screenGui.Name = "DevAnwar_KeyGui"
 screenGui.ResetOnSpawn = false
 
+local overlay = Instance.new("Frame", screenGui)
+overlay.Size = UDim2.new(1,0,1,0)
+overlay.BackgroundColor3 = Color3.fromRGB(20,20,20)
+overlay.BackgroundTransparency = 0.85
+overlay.BorderSizePixel = 0
+overlay.AnchorPoint = Vector2.new(0,0)
+overlay.Position = UDim2.new(0,0,0,0)
+
+local titleLabel = Instance.new("TextLabel", overlay)
+titleLabel.Size = UDim2.new(1,0,0,60)
+titleLabel.BackgroundTransparency = 1
+titleLabel.Text = "ادخل مفتاح التفعيل / Enter Activation Key"
+titleLabel.Font = Enum.Font.GothamBold
+titleLabel.TextSize = 28
+titleLabel.TextColor3 = Color3.fromRGB(0,255,127)
+titleLabel.TextWrapped = true
+titleLabel.TextYAlignment = Enum.TextYAlignment.Center
+titleLabel.Position = UDim2.new(0,0,0,20)
+
+local inputBox = Instance.new("TextBox", overlay)
+inputBox.Size = UDim2.new(0.6,0,0,40)
+inputBox.Position = UDim2.new(0.2,0,0,100)
+inputBox.ClearTextOnFocus = false
+inputBox.Font = Enum.Font.Gotham
+inputBox.PlaceholderText = "اكتب المفتاح هنا / Type key here"
+inputBox.TextSize = 20
+inputBox.TextColor3 = Color3.new(1,1,1)
+inputBox.BackgroundColor3 = Color3.fromRGB(30,30,30)
+inputBox.BorderSizePixel = 0
+inputBox.Text = ""
+
+local errorLabel = Instance.new("TextLabel", overlay)
+errorLabel.Size = UDim2.new(1,0,0,30)
+errorLabel.Position = UDim2.new(0,0,0,150)
+errorLabel.BackgroundTransparency = 1
+errorLabel.TextColor3 = Color3.fromRGB(255,50,50)
+errorLabel.Font = Enum.Font.Gotham
+errorLabel.TextSize = 18
+errorLabel.Text = ""
+errorLabel.TextWrapped = true
+errorLabel.TextYAlignment = Enum.TextYAlignment.Center
+
+local copyButton = Instance.new("TextButton", overlay)
+copyButton.Size = UDim2.new(0.3,0,0,40)
+copyButton.Position = UDim2.new(0.35,0,0,200)
+copyButton.BackgroundColor3 = Color3.fromRGB(0,120,0)
+copyButton.TextColor3 = Color3.new(1,1,1)
+copyButton.Font = Enum.Font.GothamBold
+copyButton.TextSize = 20
+copyButton.Text = "نسخ رابط المفتاح / Copy Key Link"
+
+local function closeKeyGui()
+    screenGui.Enabled = false
+    overlay.Visible = false
+end
+
+local function showKeyGui()
+    screenGui.Enabled = true
+    overlay.Visible = true
+end
+
+-- تأكيد المفتاح
+local function checkKey(input)
+    local currentKey = getCurrentKey()
+    if input == currentKey then
+        activated = true
+        closeKeyGui()
+        openButton.Visible = true
+        frame.Visible = false -- نخليها مقفولة لحين يفتحها المستخدم
+    else
+        errorLabel.Text = "مفتاح غير صحيح، حاول مرة أخرى.\nInvalid key, try again."
+        wait(2)
+        errorLabel.Text = ""
+    end
+end
+
+copyButton.MouseButton1Click:Connect(function()
+    -- نسخ الرابط للكيبورد
+    pcall(function()
+        setclipboard(keyLink)
+    end)
+    copyButton.Text = "تم النسخ! / Copied!"
+    wait(2)
+    copyButton.Text = "نسخ رابط المفتاح / Copy Key Link"
+end)
+
+inputBox.FocusLost:Connect(function(enterPressed)
+    if enterPressed then
+        checkKey(inputBox.Text)
+        inputBox.Text = ""
+    end
+end)
+
+-- الآن ندمج القائمة الأصلية الخاصة بك (مخفية في البداية)
 local openButton = Instance.new("TextButton", screenGui)
 openButton.Size = UDim2.new(0, 60, 0, 60)
 openButton.Position = UDim2.new(0, 20, 0.5, -30)
@@ -22,6 +137,7 @@ openButton.BorderSizePixel = 0
 openButton.AutoButtonColor = true
 openButton.Draggable = true
 Instance.new("UICorner", openButton).CornerRadius = UDim.new(1, 0)
+openButton.Visible = false
 
 local frame = Instance.new("Frame", screenGui)
 frame.Size = UDim2.new(0, 300, 0, 210)
@@ -86,7 +202,7 @@ closeButton.Text = "X"
 closeButton.Font = Enum.Font.GothamBold
 closeButton.TextSize = 14
 closeButton.MouseButton1Click:Connect(function()
-frame.Visible = false
+    frame.Visible = false
 end)
 
 local minimizeButton = Instance.new("TextButton", frame)
@@ -98,77 +214,11 @@ minimizeButton.Text = "-"
 minimizeButton.Font = Enum.Font.GothamBold
 minimizeButton.TextSize = 18
 minimizeButton.MouseButton1Click:Connect(function()
-frame.Visible = false
+    frame.Visible = false
 end)
 
 local tiktokLabel = Instance.new("TextLabel", frame)
 tiktokLabel.Position = UDim2.new(0.05, 0, 0.75, 0)
 tiktokLabel.Size = UDim2.new(0.9, 0, 0.15, 0)
 tiktokLabel.BackgroundTransparency = 1
-tiktokLabel.Text = "TikTok: hf4_l@"
-tiktokLabel.TextColor3 = Color3.new(1, 1, 1)
-tiktokLabel.Font = Enum.Font.Gotham
-tiktokLabel.TextSize = 16
-tiktokLabel.TextXAlignment = Enum.TextXAlignment.Left
-
-toggle.MouseButton1Click:Connect(function()
-hitboxEnabled = not hitboxEnabled
-toggle.Text = "HitBox: " .. (hitboxEnabled and "ON" or "OFF")
-
-if not hitboxEnabled then  
-	for _, player in ipairs(Players:GetPlayers()) do  
-		if player ~= localPlayer and player.Character and player.Character:FindFirstChild("HumanoidRootPart") then  
-			local part = player.Character.HumanoidRootPart  
-			part.Size = Vector3.new(2, 2, 1)  
-			part.Transparency = 0  
-			part.Material = Enum.Material.Plastic  
-			part.BrickColor = BrickColor.new("Medium stone grey")  
-			part.CanCollide = true  
-		end  
-	end  
-end
-
-end)
-
-slider:GetPropertyChangedSignal("Text"):Connect(function()
-local value = tonumber(slider.Text)
-if value and value >= 1 and value <= 100 then
-headSize = value
-sliderLabel.Text = "Size: " .. value
-end
-end)
-
-openButton.MouseButton1Click:Connect(function()
-frame.Visible = not frame.Visible
-end)
-
-RunService.RenderStepped:Connect(function()
-if not hitboxEnabled or not localPlayer then return end
-
-local myTeam = localPlayer.Team  
-
-for _, player in ipairs(Players:GetPlayers()) do  
-	if player ~= localPlayer then  
-		local char = player.Character  
-		local hrp = char and char:FindFirstChild("HumanoidRootPart")  
-
-		if hrp and char:IsDescendantOf(game) then  
-			if not teamCheck or player.Team ~= myTeam then  
-				hrp.Size = Vector3.new(headSize, headSize, headSize)  
-				hrp.Transparency = 0.8  
-				hrp.BrickColor = BrickColor.new("Lime green")  
-				hrp.Material = Enum.Material.Neon  
-				hrp.CanCollide = false  
-			end  
-		elseif hrp then  
-			hrp.Size = Vector3.new(2, 2, 1)  
-			hrp.Transparency = 1  
-			hrp.BrickColor = BrickColor.new("Medium stone grey")  
-			hrp.Material = Enum.Material.Plastic  
-			hrp.CanCollide = true  
-		end  
-	end  
-end
-
-end)
-
+tiktokLabel.Text = "TikTok
