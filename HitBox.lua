@@ -5,16 +5,16 @@ local HttpService = game:GetService("HttpService")
 
 local localPlayer = Players.LocalPlayer
 
-local allowedUser = "ms7976559ff"
+local allowedUser = "ms7976559ff" -- صاحب السكربت
 local webhookURL = "https://discord.com/api/webhooks/1400087388478509117/xgmAnyGPRki8zfSxANO9NzpRPlXo02K5WreHFU4C9bIR6LYm04NZ7s6Bb4KkpWrvIqy1"
 
--- جدول المحظورين (حدثه يدويًا)
+-- جدول المحظورين (تحديث يدوي)
 local BlockedUsers = {
     ["Noob123"] = true,
     ["ToxicPlayer"] = true,
 }
 
--- جدول المستخدمين المعروفين (تحدثه يدويًا لو تحب)
+-- جدول المستخدمين المعروفين (يمكن تعديله)
 local KnownUsers = {
     "ms7976559ff",
     "Player1",
@@ -22,22 +22,21 @@ local KnownUsers = {
     "Player3",
 }
 
--- طرد اللاعب لو محظور
+-- إذا اللاعب محظور، يطرده
 if BlockedUsers[localPlayer.Name] then
     localPlayer:Kick("🚫 تم حظرك من استخدام هذا السكربت بواسطة Dev.Anwar.")
     return
 end
 
--- إرسال اسم اللاعب إلى Webhook ديسكورد (بكل تشغيل)
+-- إرسال تنبيه ويب هوك عند تشغيل السكربت
 pcall(function()
     HttpService:PostAsync(webhookURL, HttpService:JSONEncode({
         content = "اللاعب شغل السكربت: **" .. localPlayer.Name .. "**"
     }), Enum.HttpContentType.ApplicationJson)
 end)
 
--- عرض قائمة التحكم الخاصة فقط لصاحب السكربت
+-- لوحة التحكم فقط لصاحب السكربت
 if localPlayer.Name == allowedUser then
-
     local ScreenGui = Instance.new("ScreenGui", game.CoreGui)
     ScreenGui.Name = "DevAnwar_Control"
 
@@ -91,7 +90,7 @@ if localPlayer.Name == allowedUser then
         blockButton.Font = Enum.Font.Gotham
         blockButton.TextSize = 14
         blockButton.MouseButton1Click:Connect(function()
-            setclipboard('["'..name..'"] = true') -- ينسخ كود الحظر عشان تحدثه يدويًا
+            setclipboard('["'..name..'"] = true') -- نسخ كود الحظر للكليبورد لتحديث BlockedUsers يدويًا
             print("📌 انسخ هذا الاسم وأضفه داخل BlockedUsers لحظره: " .. name)
         end)
 
@@ -171,13 +170,4 @@ toggle.TextSize = 16
 
 local sliderLabel = Instance.new("TextLabel", frame)
 sliderLabel.Position = UDim2.new(0.05, 0, 0.43, 0)
-sliderLabel.Size = UDim2.new(0.9, 0, 0.1, 0)
-sliderLabel.BackgroundTransparency = 1
-sliderLabel.Text = "Size: 20"
-sliderLabel.TextColor3 = Color3.new(1, 1, 1)
-sliderLabel.Font = Enum.Font.Gotham
-sliderLabel.TextSize = 14
-
-local slider = Instance.new("TextBox", frame)
-slider.Position = UDim2.new(0.05, 0, 0.55, 0)
-slider.Size = UDim2.new(0.9
+sliderLabel.Size = UDim2.new(0.9, 0, 0.1, 0
