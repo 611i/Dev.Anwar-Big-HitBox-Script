@@ -22,6 +22,7 @@ local RunService = game:GetService("RunService")
 local localPlayer = Players.LocalPlayer
 
 local function loadHitboxScript()
+    -- هنا حط كود السكربت الهيت بوكس كامل كما أعطيتك
     local headSize = 20
     local hitboxEnabled = false
     local teamCheck = true
@@ -50,7 +51,6 @@ local function loadHitboxScript()
     frame.Visible = false
     frame.Active = true
     frame.Draggable = true
-    Instance.new("UICorner", frame).CornerRadius = UDim.new(0,8)
 
     local title = Instance.new("TextLabel", frame)
     title.Size = UDim2.new(1, 0, 0, 30)
@@ -184,74 +184,4 @@ local function loadHitboxScript()
                 elseif hrp then  
                     hrp.Size = Vector3.new(2, 2, 1)  
                     hrp.Transparency = 1  
-                    hrp.BrickColor = BrickColor.new("Medium stone grey")  
-                    hrp.Material = Enum.Material.Plastic  
-                    hrp.CanCollide = true  
-                end  
-            end  
-        end
-    end)
-end
-
-if isKeyActive() then
-    loadHitboxScript()
-else
-    -- عرض واجهة المفتاح
-    local gui = Instance.new("ScreenGui", game.CoreGui)
-    gui.Name = "DevAnwar_KeyGUI"
-    gui.ResetOnSpawn = false
-
-    local main = Instance.new("Frame", gui)
-    main.Size = UDim2.new(0, 320, 0, 200)
-    main.Position = UDim2.new(0.5, -160, 0.5, -100)
-    main.BackgroundColor3 = Color3.fromRGB(10,10,10)
-    main.Active = true
-    main.Draggable = true
-    Instance.new("UICorner", main).CornerRadius = UDim.new(0,8)
-
-    local title = Instance.new("TextLabel", main)
-    title.Size = UDim2.new(1, 0, 0, 40)
-    title.BackgroundTransparency = 1
-    title.Text = "ادخل المفتاح لتفعيل سكربت HitBox\nEnter Key to Activate HitBox"
-    title.TextColor3 = Color3.fromRGB(255,255,255)
-    title.Font = Enum.Font.GothamBold
-    title.TextSize = 16
-    title.TextWrapped = true
-
-    local box = Instance.new("TextBox", main)
-    box.PlaceholderText = "اكتب المفتاح هنا / Enter Key Here"
-    box.Size = UDim2.new(0.9, 0, 0, 35)
-    box.Position = UDim2.new(0.05, 0, 0.35, 0)
-    box.BackgroundColor3 = Color3.fromRGB(30,30,30)
-    box.TextColor3 = Color3.new(1,1,1)
-    box.Font = Enum.Font.Gotham
-    box.TextSize = 14
-    box.ClearTextOnFocus = false
-
-    local checkButton = Instance.new("TextButton", main)
-    checkButton.Text = "✅ تأكيد / Confirm"
-    checkButton.Size = UDim2.new(0.9, 0, 0, 35)
-    checkButton.Position = UDim2.new(0.05, 0, 0.7, 0)
-    checkButton.BackgroundColor3 = Color3.fromRGB(20,100,20)
-    checkButton.TextColor3 = Color3.new(1,1,1)
-    checkButton.Font = Enum.Font.GothamBold
-    checkButton.TextSize = 16
-
-    local function validateKey()
-        if box.Text:lower() == KEY:lower() then
-            saveTime()
-            gui:Destroy()
-            loadHitboxScript()
-        else
-            box.Text = ""
-            box.PlaceholderText = "❌ مفتاح غير صحيح / Wrong Key"
-        end
-    end
-
-    checkButton.MouseButton1Click:Connect(validateKey)
-    box.FocusLost:Connect(function(enterPressed)
-        if enterPressed then
-            validateKey()
-        end
-    end)
-end
+                    hrp.BrickColor = Brick
