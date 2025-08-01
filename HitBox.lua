@@ -156,14 +156,14 @@ local function loadHitboxScript()
     end)
 end
 
--- هنا واجهة المفتاح تظهر دائماً وتطلب المفتاح في كل تشغيل
+-- واجهة المفتاح
 local gui = Instance.new("ScreenGui", game.CoreGui)
 gui.Name = "DevAnwar_KeyGUI"
 gui.ResetOnSpawn = false
 
 local main = Instance.new("Frame", gui)
-main.Size = UDim2.new(0, 320, 0, 240)
-main.Position = UDim2.new(0.5, -160, 0.5, -120)
+main.Size = UDim2.new(0, 320, 0, 340)
+main.Position = UDim2.new(0.5, -160, 0.5, -170)
 main.BackgroundColor3 = Color3.fromRGB(10,10,10)
 main.Active = true
 main.Draggable = true
@@ -181,39 +181,67 @@ title.TextWrapped = true
 local box = Instance.new("TextBox", main)
 box.PlaceholderText = "اكتب المفتاح هنا / Enter Key Here"
 box.Size = UDim2.new(0.9, 0, 0, 35)
-box.Position = UDim2.new(0.05, 0, 0.35, 0)
+box.Position = UDim2.new(0.05, 0, 0.28, 0)
 box.BackgroundColor3 = Color3.fromRGB(30,30,30)
 box.TextColor3 = Color3.new(1,1,1)
 box.Font = Enum.Font.Gotham
 box.TextSize = 14
 box.ClearTextOnFocus = false
 
+local copyButton = Instance.new("TextButton", main)
+copyButton.Text = "📋 نسخ رابط الموقع"
+copyButton.Size = UDim2.new(0.9, 0, 0, 35)
+copyButton.Position = UDim2.new(0.05, 0, 0.42, 0)
+copyButton.BackgroundColor3 = Color3.fromRGB(50,50,50)
+copyButton.TextColor3 = Color3.new(1,1,1)
+copyButton.Font = Enum.Font.Gotham
+copyButton.TextSize = 14
+copyButton.MouseButton1Click:Connect(function()
+    if setclipboard then
+        setclipboard("https://direct-link.net/1376498/WRpu4mqGF3OM")
+        copyButton.Text = "✔️ تم نسخ الرابط!"
+    else
+        copyButton.Text = "❌ نسخ غير مدعوم"
+    end
+end)
+
+local discordButton = Instance.new("TextButton", main)
+discordButton.Text = "📎 نسخ رابط الديسكورد"
+discordButton.Size = UDim2.new(0.9, 0, 0, 35)
+discordButton.Position = UDim2.new(0.05, 0, 0.53, 0)
+discordButton.BackgroundColor3 = Color3.fromRGB(50, 50, 50)
+discordButton.TextColor3 = Color3.new(1, 1, 1)
+discordButton.Font = Enum.Font.Gotham
+discordButton.TextSize = 14
+discordButton.MouseButton1Click:Connect(function()
+    if setclipboard then
+        setclipboard("https://discord.gg/Jhdh3DFV")
+        discordButton.Text = "✔️ تم نسخ ديسكورد!"
+    else
+        discordButton.Text = "❌ نسخ غير مدعوم"
+    end
+end)
+
 local checkButton = Instance.new("TextButton", main)
 checkButton.Text = "✅ تأكيد / Confirm"
 checkButton.Size = UDim2.new(0.9, 0, 0, 35)
-checkButton.Position = UDim2.new(0.05, 0, 0.7, 0)
+checkButton.Position = UDim2.new(0.05, 0, 0.64, 0)
 checkButton.BackgroundColor3 = Color3.fromRGB(20,100,20)
 checkButton.TextColor3 = Color3.new(1,1,1)
 checkButton.Font = Enum.Font.GothamBold
 checkButton.TextSize = 16
 
-local copyButton = Instance.new("TextButton", main)
-copyButton.Text = "📋 نسخ رابط المفتاح"
-copyButton.Size = UDim2.new(0.9, 0, 0, 35)
-copyButton.Position = UDim2.new(0.05, 0, 0.58, 0)
-copyButton.BackgroundColor3 = Color3.fromRGB(50,50,50)
-copyButton.TextColor3 = Color3.new(1,1,1)
-copyButton.Font = Enum.Font.Gotham
-copyButton.TextSize = 14
-
-copyButton.MouseButton1Click:Connect(function()
-    if setclipboard then
-        setclipboard("https://direct-link.net/1376498/WRpu4mqGF3OM")
-        copyButton.Text = "✔️ تم النسخ!"
-    else
-        copyButton.Text = "❌ نسخ غير مدعوم"
-    end
-end)
+local infoLabel = Instance.new("TextLabel", main)
+infoLabel.Text = "🔑 المفتاح موجود في الرابط أو في الديسكورد\nDiscord: discord.gg/Jhdh3DFV"
+infoLabel.Size = UDim2.new(0.9, 0, 0, 40)
+infoLabel.Position = UDim2.new(0.05, 0, 0.77, 0)
+infoLabel.BackgroundTransparency = 1
+infoLabel.TextColor3 = Color3.fromRGB(255, 255, 0)
+infoLabel.Font = Enum.Font.GothamBold
+infoLabel.TextSize = 13
+infoLabel.TextWrapped = true
+infoLabel.TextXAlignment = Enum.TextXAlignment.Center
+infoLabel.TextYAlignment = Enum.TextYAlignment.Center
 
 local function validateKey()
     if box.Text:lower() == KEY:lower() then
