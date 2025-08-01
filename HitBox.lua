@@ -1,4 +1,4 @@
-local KEY = "anwar12233"
+local KEY = "nnnn1100"
 
 local Players = game:GetService("Players")
 local RunService = game:GetService("RunService")
