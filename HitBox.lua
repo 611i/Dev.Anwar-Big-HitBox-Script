@@ -1,3 +1,7 @@
+--// سكربت Dev.Anwar HitBox نسخة 1.2
+--// تم حل مشكلة بقاء الهيت بوكس بعد موت اللاعب
+--// وتمت إضافة رابط الديسكورد في واجهة المفتاح
+
 local KEY = "nnnn1100"
 
 local Players = game:GetService("Players")
@@ -8,6 +12,47 @@ local function loadHitboxScript()
     local headSize = 20
     local hitboxEnabled = false
     local teamCheck = true
+    local deadPlayers = {}
+
+    local function resetHitbox(player)
+        local char = player and player.Character
+        if char then
+            local hrp = char:FindFirstChild("HumanoidRootPart")
+            if hrp then
+                hrp.Size = Vector3.new(2, 2, 1)
+                hrp.Transparency = 0
+                hrp.Material = Enum.Material.Plastic
+                hrp.BrickColor = BrickColor.new("Medium stone grey")
+                hrp.CanCollide = true
+            end
+        end
+    end
+
+    Players.PlayerAdded:Connect(function(player)
+        player.CharacterAdded:Connect(function(char)
+            deadPlayers[player] = nil
+            local hum = char:WaitForChild("Humanoid", 5)
+            if hum then
+                hum.Died:Connect(function()
+                    resetHitbox(player)
+                    deadPlayers[player] = true
+                end)
+            end
+        end)
+    end)
+
+    for _, player in ipairs(Players:GetPlayers()) do
+        player.CharacterAdded:Connect(function(char)
+            deadPlayers[player] = nil
+            local hum = char:WaitForChild("Humanoid", 5)
+            if hum then
+                hum.Died:Connect(function()
+                    resetHitbox(player)
+                    deadPlayers[player] = true
+                end)
+            end
+        end)
+    end
 
     local screenGui = Instance.new("ScreenGui", game.CoreGui)
     screenGui.Name = "DevAnwar_GUI"
@@ -27,7 +72,7 @@ local function loadHitboxScript()
     Instance.new("UICorner", openButton).CornerRadius = UDim.new(1, 0)
 
     local frame = Instance.new("Frame", screenGui)
-    frame.Size = UDim2.new(0, 300, 0, 210)
+    frame.Size = UDim2.new(0, 300, 0, 240)
     frame.Position = UDim2.new(0.3, 0, 0.3, 0)
     frame.BackgroundColor3 = Color3.fromRGB(20, 20, 20)
     frame.Visible = false
@@ -46,7 +91,7 @@ local function loadHitboxScript()
     updateLabel.Size = UDim2.new(1, 0, 0, 20)
     updateLabel.Position = UDim2.new(0, 0, 0.9, 0)
     updateLabel.BackgroundTransparency = 1
-    updateLabel.Text = "Version 1.1 - تم تحديث السكربت"
+    updateLabel.Text = "📌 تحديث / Version 1.2 - تم حل مشكلة الهت بوكس عند الموت"
     updateLabel.TextColor3 = Color3.fromRGB(0, 255, 127)
     updateLabel.Font = Enum.Font.Gotham
     updateLabel.TextSize = 14
@@ -105,16 +150,10 @@ local function loadHitboxScript()
     toggle.MouseButton1Click:Connect(function()
         hitboxEnabled = not hitboxEnabled
         toggle.Text = "HitBox: " .. (hitboxEnabled and "ON" or "OFF")
-
         if not hitboxEnabled then
             for _, player in ipairs(Players:GetPlayers()) do
-                if player ~= localPlayer and player.Character and player.Character:FindFirstChild("HumanoidRootPart") then
-                    local part = player.Character.HumanoidRootPart
-                    part.Size = Vector3.new(2, 2, 1)
-                    part.Transparency = 0
-                    part.Material = Enum.Material.Plastic
-                    part.BrickColor = BrickColor.new("Medium stone grey")
-                    part.CanCollide = true
+                if player ~= localPlayer then
+                    resetHitbox(player)
                 end
             end
         end
@@ -134,15 +173,13 @@ local function loadHitboxScript()
 
     RunService.RenderStepped:Connect(function()
         if not hitboxEnabled or not localPlayer then return end
-
         local myTeam = localPlayer.Team
-
         for _, player in ipairs(Players:GetPlayers()) do
-            if player ~= localPlayer then
+            if player ~= localPlayer and not deadPlayers[player] then
                 local char = player.Character
                 local hrp = char and char:FindFirstChild("HumanoidRootPart")
-
-                if hrp and char:IsDescendantOf(game) then
+                local hum = char and char:FindFirstChild("Humanoid")
+                if hrp and hum and hum.Health > 0 then
                     if not teamCheck or player.Team ~= myTeam then
                         hrp.Size = Vector3.new(headSize, headSize, headSize)
                         hrp.Transparency = 0.8
@@ -162,8 +199,8 @@ gui.Name = "DevAnwar_KeyGUI"
 gui.ResetOnSpawn = false
 
 local main = Instance.new("Frame", gui)
-main.Size = UDim2.new(0, 320, 0, 340)
-main.Position = UDim2.new(0.5, -160, 0.5, -170)
+main.Size = UDim2.new(0, 340, 0, 260)
+main.Position = UDim2.new(0.5, -170, 0.5, -130)
 main.BackgroundColor3 = Color3.fromRGB(10,10,10)
 main.Active = true
 main.Draggable = true
@@ -172,7 +209,7 @@ Instance.new("UICorner", main).CornerRadius = UDim.new(0,8)
 local title = Instance.new("TextLabel", main)
 title.Size = UDim2.new(1, 0, 0, 40)
 title.BackgroundTransparency = 1
-title.Text = "ادخل المفتاح لتفعيل سكربت HitBox\nEnter Key to Activate HitBox"
+title.Text = "🔐 ادخل المفتاح لتفعيل HitBox\nEnter Key to Activate HitBox"
 title.TextColor3 = Color3.fromRGB(255,255,255)
 title.Font = Enum.Font.GothamBold
 title.TextSize = 16
@@ -181,67 +218,53 @@ title.TextWrapped = true
 local box = Instance.new("TextBox", main)
 box.PlaceholderText = "اكتب المفتاح هنا / Enter Key Here"
 box.Size = UDim2.new(0.9, 0, 0, 35)
-box.Position = UDim2.new(0.05, 0, 0.28, 0)
+box.Position = UDim2.new(0.05, 0, 0.35, 0)
 box.BackgroundColor3 = Color3.fromRGB(30,30,30)
 box.TextColor3 = Color3.new(1,1,1)
 box.Font = Enum.Font.Gotham
 box.TextSize = 14
 box.ClearTextOnFocus = false
 
-local copyButton = Instance.new("TextButton", main)
-copyButton.Text = "📋 نسخ رابط الموقع"
-copyButton.Size = UDim2.new(0.9, 0, 0, 35)
-copyButton.Position = UDim2.new(0.05, 0, 0.42, 0)
-copyButton.BackgroundColor3 = Color3.fromRGB(50,50,50)
-copyButton.TextColor3 = Color3.new(1,1,1)
-copyButton.Font = Enum.Font.Gotham
-copyButton.TextSize = 14
-copyButton.MouseButton1Click:Connect(function()
-    if setclipboard then
-        setclipboard("https://direct-link.net/1376498/WRpu4mqGF3OM")
-        copyButton.Text = "✔️ تم نسخ الرابط!"
-    else
-        copyButton.Text = "❌ نسخ غير مدعوم"
-    end
-end)
-
-local discordButton = Instance.new("TextButton", main)
-discordButton.Text = "📎 نسخ رابط الديسكورد"
-discordButton.Size = UDim2.new(0.9, 0, 0, 35)
-discordButton.Position = UDim2.new(0.05, 0, 0.53, 0)
-discordButton.BackgroundColor3 = Color3.fromRGB(50, 50, 50)
-discordButton.TextColor3 = Color3.new(1, 1, 1)
-discordButton.Font = Enum.Font.Gotham
-discordButton.TextSize = 14
-discordButton.MouseButton1Click:Connect(function()
-    if setclipboard then
-        setclipboard("https://discord.gg/Jhdh3DFV")
-        discordButton.Text = "✔️ تم نسخ ديسكورد!"
-    else
-        discordButton.Text = "❌ نسخ غير مدعوم"
-    end
-end)
-
 local checkButton = Instance.new("TextButton", main)
 checkButton.Text = "✅ تأكيد / Confirm"
 checkButton.Size = UDim2.new(0.9, 0, 0, 35)
-checkButton.Position = UDim2.new(0.05, 0, 0.64, 0)
+checkButton.Position = UDim2.new(0.05, 0, 0.7, 0)
 checkButton.BackgroundColor3 = Color3.fromRGB(20,100,20)
 checkButton.TextColor3 = Color3.new(1,1,1)
 checkButton.Font = Enum.Font.GothamBold
 checkButton.TextSize = 16
 
-local infoLabel = Instance.new("TextLabel", main)
-infoLabel.Text = "🔑 المفتاح موجود في الرابط أو في الديسكورد\nDiscord: discord.gg/Jhdh3DFV"
-infoLabel.Size = UDim2.new(0.9, 0, 0, 40)
-infoLabel.Position = UDim2.new(0.05, 0, 0.77, 0)
-infoLabel.BackgroundTransparency = 1
-infoLabel.TextColor3 = Color3.fromRGB(255, 255, 0)
-infoLabel.Font = Enum.Font.GothamBold
-infoLabel.TextSize = 13
-infoLabel.TextWrapped = true
-infoLabel.TextXAlignment = Enum.TextXAlignment.Center
-infoLabel.TextYAlignment = Enum.TextYAlignment.Center
+local copyKey = Instance.new("TextButton", main)
+copyKey.Text = "📋 نسخ رابط الموقع"
+copyKey.Size = UDim2.new(0.43, 0, 0, 35)
+copyKey.Position = UDim2.new(0.05, 0, 0.58, 0)
+copyKey.BackgroundColor3 = Color3.fromRGB(50,50,50)
+copyKey.TextColor3 = Color3.new(1,1,1)
+copyKey.Font = Enum.Font.Gotham
+copyKey.TextSize = 14
+
+local copyDiscord = Instance.new("TextButton", main)
+copyDiscord.Text = "📎 رابط الديسكورد"
+copyDiscord.Size = UDim2.new(0.43, 0, 0, 35)
+copyDiscord.Position = UDim2.new(0.52, 0, 0.58, 0)
+copyDiscord.BackgroundColor3 = Color3.fromRGB(70,70,70)
+copyDiscord.TextColor3 = Color3.new(1,1,1)
+copyDiscord.Font = Enum.Font.Gotham
+copyDiscord.TextSize = 14
+
+copyKey.MouseButton1Click:Connect(function()
+    if setclipboard then
+        setclipboard("https://direct-link.net/1376498/WRpu4mqGF3OM")
+        copyKey.Text = "✔️ تم النسخ!"
+    end
+end)
+
+copyDiscord.MouseButton1Click:Connect(function()
+    if setclipboard then
+        setclipboard("https://discord.gg/Jhdh3DFV")
+        copyDiscord.Text = "✔️ تم النسخ!"
+    end
+end)
 
 local function validateKey()
     if box.Text:lower() == KEY:lower() then
