@@ -1,4 +1,4 @@
---// سكربت Dev.Anwar HitBox نسخة 1.4
+--// سكربت Dev.Anwar HitBox نسخة 1.4 محدثة
 --// تم حل مشكلة بقاء الهيت بوكس بعد موت اللاعب
 --// تمت إضافة زر Team Check داخل القائمة
 --// Team Check يكون OFF افتراضياً
@@ -12,7 +12,7 @@ local localPlayer = Players.LocalPlayer
 local function loadHitboxScript()
     local headSize = 20
     local hitboxEnabled = false
-    local teamCheck = false -- هنا افتراضياً طافي
+    local teamCheck = false -- افتراضياً طافي
     local deadPlayers = {}
 
     local function resetHitbox(player)
@@ -55,9 +55,10 @@ local function loadHitboxScript()
         end)
     end
 
-    local screenGui = Instance.new("ScreenGui", game.CoreGui)
+    local screenGui = Instance.new("ScreenGui")
     screenGui.Name = "DevAnwar_GUI"
     screenGui.ResetOnSpawn = false
+    screenGui.Parent = game.CoreGui
 
     local openButton = Instance.new("TextButton", screenGui)
     openButton.Size = UDim2.new(0, 60, 0, 60)
@@ -228,11 +229,92 @@ local function loadHitboxScript()
 end
 
 -- واجهة المفتاح
-local gui = Instance.new("ScreenGui", game.CoreGui)
+local gui = Instance.new("ScreenGui")
 gui.Name = "DevAnwar_KeyGUI"
 gui.ResetOnSpawn = false
+gui.Parent = game.CoreGui
 
 local main = Instance.new("Frame", gui)
 main.Size = UDim2.new(0, 340, 0, 260)
 main.Position = UDim2.new(0.5, -170, 0.5, -130)
-main.BackgroundColor3 = Color3.fromRGB(10
+main.BackgroundColor3 = Color3.fromRGB(10, 10, 10)
+main.Active = true
+main.Draggable = true
+Instance.new("UICorner", main).CornerRadius = UDim.new(0, 8)
+
+local title = Instance.new("TextLabel", main)
+title.Size = UDim2.new(1, 0, 0, 40)
+title.BackgroundTransparency = 1
+title.Text = "🔐 ادخل المفتاح لتفعيل HitBox\nEnter Key to Activate HitBox"
+title.TextColor3 = Color3.fromRGB(255, 255, 255)
+title.Font = Enum.Font.GothamBold
+title.TextSize = 16
+title.TextWrapped = true
+
+local box = Instance.new("TextBox", main)
+box.PlaceholderText = "اكتب المفتاح هنا / Enter Key Here"
+box.Size = UDim2.new(0.9, 0, 0, 35)
+box.Position = UDim2.new(0.05, 0, 0.35, 0)
+box.BackgroundColor3 = Color3.fromRGB(30, 30, 30)
+box.TextColor3 = Color3.new(1, 1, 1)
+box.Font = Enum.Font.Gotham
+box.TextSize = 14
+box.ClearTextOnFocus = false
+
+local checkButton = Instance.new("TextButton", main)
+checkButton.Text = "✅ تأكيد / Confirm"
+checkButton.Size = UDim2.new(0.9, 0, 0, 35)
+checkButton.Position = UDim2.new(0.05, 0, 0.7, 0)
+checkButton.BackgroundColor3 = Color3.fromRGB(20, 100, 20)
+checkButton.TextColor3 = Color3.new(1, 1, 1)
+checkButton.Font = Enum.Font.GothamBold
+checkButton.TextSize = 16
+
+local copyKey = Instance.new("TextButton", main)
+copyKey.Text = "📋 نسخ رابط الموقع"
+copyKey.Size = UDim2.new(0.43, 0, 0, 35)
+copyKey.Position = UDim2.new(0.05, 0, 0.58, 0)
+copyKey.BackgroundColor3 = Color3.fromRGB(50, 50, 50)
+copyKey.TextColor3 = Color3.new(1, 1, 1)
+copyKey.Font = Enum.Font.Gotham
+copyKey.TextSize = 14
+
+local copyDiscord = Instance.new("TextButton", main)
+copyDiscord.Text = "📎 رابط الديسكورد"
+copyDiscord.Size = UDim2.new(0.43, 0, 0, 35)
+copyDiscord.Position = UDim2.new(0.52, 0, 0.58, 0)
+copyDiscord.BackgroundColor3 = Color3.fromRGB(70, 70, 70)
+copyDiscord.TextColor3 = Color3.new(1, 1, 1)
+copyDiscord.Font = Enum.Font.Gotham
+copyDiscord.TextSize = 14
+
+copyKey.MouseButton1Click:Connect(function()
+    if setclipboard then
+        setclipboard("https://direct-link.net/1376498/WRpu4mqGF3OM")
+        copyKey.Text = "✔️ تم النسخ!"
+    end
+end)
+
+copyDiscord.MouseButton1Click:Connect(function()
+    if setclipboard then
+        setclipboard("https://discord.gg/Jhdh3DFV")
+        copyDiscord.Text = "✔️ تم النسخ!"
+    end
+end)
+
+local function validateKey()
+    if box.Text:lower() == KEY:lower() then
+        gui:Destroy()
+        loadHitboxScript()
+    else
+        box.Text = ""
+        box.PlaceholderText = "❌ مفتاح غير صحيح / Wrong Key"
+    end
+end
+
+checkButton.MouseButton1Click:Connect(validateKey)
+box.FocusLost:Connect(function(enterPressed)
+    if enterPressed then
+        validateKey()
+    end
+end)
