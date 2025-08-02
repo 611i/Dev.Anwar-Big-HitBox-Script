@@ -1,6 +1,7 @@
---// سكربت Dev.Anwar HitBox نسخة 1.2
+--// سكربت Dev.Anwar HitBox نسخة 1.4
 --// تم حل مشكلة بقاء الهيت بوكس بعد موت اللاعب
---// وتمت إضافة رابط الديسكورد في واجهة المفتاح
+--// تمت إضافة زر Team Check داخل القائمة
+--// Team Check يكون OFF افتراضياً
 
 local KEY = "nnnn1100"
 
@@ -11,7 +12,7 @@ local localPlayer = Players.LocalPlayer
 local function loadHitboxScript()
     local headSize = 20
     local hitboxEnabled = false
-    local teamCheck = true
+    local teamCheck = false -- هنا افتراضياً طافي
     local deadPlayers = {}
 
     local function resetHitbox(player)
@@ -72,7 +73,7 @@ local function loadHitboxScript()
     Instance.new("UICorner", openButton).CornerRadius = UDim.new(1, 0)
 
     local frame = Instance.new("Frame", screenGui)
-    frame.Size = UDim2.new(0, 300, 0, 240)
+    frame.Size = UDim2.new(0, 300, 0, 260)
     frame.Position = UDim2.new(0.3, 0, 0.3, 0)
     frame.BackgroundColor3 = Color3.fromRGB(20, 20, 20)
     frame.Visible = false
@@ -91,23 +92,32 @@ local function loadHitboxScript()
     updateLabel.Size = UDim2.new(1, 0, 0, 20)
     updateLabel.Position = UDim2.new(0, 0, 0.9, 0)
     updateLabel.BackgroundTransparency = 1
-    updateLabel.Text = "📌 تحديث / Version 1.2 - تم حل مشكلة الهت بوكس عند الموت"
+    updateLabel.Text = "📌 تحديث / Version 1.4 - Team Check افتراضي طافي + تحديث فوري"
     updateLabel.TextColor3 = Color3.fromRGB(0, 255, 127)
     updateLabel.Font = Enum.Font.Gotham
     updateLabel.TextSize = 14
     updateLabel.TextXAlignment = Enum.TextXAlignment.Center
 
     local toggle = Instance.new("TextButton", frame)
-    toggle.Position = UDim2.new(0.05, 0, 0.25, 0)
-    toggle.Size = UDim2.new(0.9, 0, 0.15, 0)
+    toggle.Position = UDim2.new(0.05, 0, 0.2, 0)
+    toggle.Size = UDim2.new(0.9, 0, 0.13, 0)
     toggle.BackgroundColor3 = Color3.fromRGB(40, 40, 40)
     toggle.TextColor3 = Color3.new(1, 1, 1)
     toggle.Text = "HitBox: OFF"
     toggle.Font = Enum.Font.Gotham
     toggle.TextSize = 16
 
+    local teamToggle = Instance.new("TextButton", frame)
+    teamToggle.Position = UDim2.new(0.05, 0, 0.35, 0)
+    teamToggle.Size = UDim2.new(0.9, 0, 0.1, 0)
+    teamToggle.BackgroundColor3 = Color3.fromRGB(40, 40, 40)
+    teamToggle.TextColor3 = Color3.new(1, 1, 1)
+    teamToggle.Text = "Team Check: OFF"
+    teamToggle.Font = Enum.Font.Gotham
+    teamToggle.TextSize = 14
+
     local sliderLabel = Instance.new("TextLabel", frame)
-    sliderLabel.Position = UDim2.new(0.05, 0, 0.43, 0)
+    sliderLabel.Position = UDim2.new(0.05, 0, 0.48, 0)
     sliderLabel.Size = UDim2.new(0.9, 0, 0.1, 0)
     sliderLabel.BackgroundTransparency = 1
     sliderLabel.Text = "Size: 20"
@@ -116,7 +126,7 @@ local function loadHitboxScript()
     sliderLabel.TextSize = 14
 
     local slider = Instance.new("TextBox", frame)
-    slider.Position = UDim2.new(0.05, 0, 0.55, 0)
+    slider.Position = UDim2.new(0.05, 0, 0.59, 0)
     slider.Size = UDim2.new(0.9, 0, 0.13, 0)
     slider.BackgroundColor3 = Color3.fromRGB(30, 30, 30)
     slider.TextColor3 = Color3.new(1, 1, 1)
@@ -154,6 +164,30 @@ local function loadHitboxScript()
             for _, player in ipairs(Players:GetPlayers()) do
                 if player ~= localPlayer then
                     resetHitbox(player)
+                end
+            end
+        end
+    end)
+
+    teamToggle.MouseButton1Click:Connect(function()
+        teamCheck = not teamCheck
+        teamToggle.Text = "Team Check: " .. (teamCheck and "ON" or "OFF")
+
+        -- تحديث فوري للحالات حسب التفعيل
+        for _, player in ipairs(Players:GetPlayers()) do
+            if player ~= localPlayer then
+                local char = player.Character
+                local hrp = char and char:FindFirstChild("HumanoidRootPart")
+                if hrp then
+                    if teamCheck and player.Team == localPlayer.Team then
+                        resetHitbox(player)
+                    elseif hitboxEnabled then
+                        hrp.Size = Vector3.new(headSize, headSize, headSize)
+                        hrp.Transparency = 0.8
+                        hrp.BrickColor = BrickColor.new("Lime green")
+                        hrp.Material = Enum.Material.Neon
+                        hrp.CanCollide = false
+                    end
                 end
             end
         end
@@ -201,84 +235,4 @@ gui.ResetOnSpawn = false
 local main = Instance.new("Frame", gui)
 main.Size = UDim2.new(0, 340, 0, 260)
 main.Position = UDim2.new(0.5, -170, 0.5, -130)
-main.BackgroundColor3 = Color3.fromRGB(10,10,10)
-main.Active = true
-main.Draggable = true
-Instance.new("UICorner", main).CornerRadius = UDim.new(0,8)
-
-local title = Instance.new("TextLabel", main)
-title.Size = UDim2.new(1, 0, 0, 40)
-title.BackgroundTransparency = 1
-title.Text = "🔐 ادخل المفتاح لتفعيل HitBox\nEnter Key to Activate HitBox"
-title.TextColor3 = Color3.fromRGB(255,255,255)
-title.Font = Enum.Font.GothamBold
-title.TextSize = 16
-title.TextWrapped = true
-
-local box = Instance.new("TextBox", main)
-box.PlaceholderText = "اكتب المفتاح هنا / Enter Key Here"
-box.Size = UDim2.new(0.9, 0, 0, 35)
-box.Position = UDim2.new(0.05, 0, 0.35, 0)
-box.BackgroundColor3 = Color3.fromRGB(30,30,30)
-box.TextColor3 = Color3.new(1,1,1)
-box.Font = Enum.Font.Gotham
-box.TextSize = 14
-box.ClearTextOnFocus = false
-
-local checkButton = Instance.new("TextButton", main)
-checkButton.Text = "✅ تأكيد / Confirm"
-checkButton.Size = UDim2.new(0.9, 0, 0, 35)
-checkButton.Position = UDim2.new(0.05, 0, 0.7, 0)
-checkButton.BackgroundColor3 = Color3.fromRGB(20,100,20)
-checkButton.TextColor3 = Color3.new(1,1,1)
-checkButton.Font = Enum.Font.GothamBold
-checkButton.TextSize = 16
-
-local copyKey = Instance.new("TextButton", main)
-copyKey.Text = "📋 نسخ رابط الموقع"
-copyKey.Size = UDim2.new(0.43, 0, 0, 35)
-copyKey.Position = UDim2.new(0.05, 0, 0.58, 0)
-copyKey.BackgroundColor3 = Color3.fromRGB(50,50,50)
-copyKey.TextColor3 = Color3.new(1,1,1)
-copyKey.Font = Enum.Font.Gotham
-copyKey.TextSize = 14
-
-local copyDiscord = Instance.new("TextButton", main)
-copyDiscord.Text = "📎 رابط الديسكورد"
-copyDiscord.Size = UDim2.new(0.43, 0, 0, 35)
-copyDiscord.Position = UDim2.new(0.52, 0, 0.58, 0)
-copyDiscord.BackgroundColor3 = Color3.fromRGB(70,70,70)
-copyDiscord.TextColor3 = Color3.new(1,1,1)
-copyDiscord.Font = Enum.Font.Gotham
-copyDiscord.TextSize = 14
-
-copyKey.MouseButton1Click:Connect(function()
-    if setclipboard then
-        setclipboard("https://direct-link.net/1376498/WRpu4mqGF3OM")
-        copyKey.Text = "✔️ تم النسخ!"
-    end
-end)
-
-copyDiscord.MouseButton1Click:Connect(function()
-    if setclipboard then
-        setclipboard("https://discord.gg/Jhdh3DFV")
-        copyDiscord.Text = "✔️ تم النسخ!"
-    end
-end)
-
-local function validateKey()
-    if box.Text:lower() == KEY:lower() then
-        gui:Destroy()
-        loadHitboxScript()
-    else
-        box.Text = ""
-        box.PlaceholderText = "❌ مفتاح غير صحيح / Wrong Key"
-    end
-end
-
-checkButton.MouseButton1Click:Connect(validateKey)
-box.FocusLost:Connect(function(enterPressed)
-    if enterPressed then
-        validateKey()
-    end
-end)
+main.BackgroundColor3 = Color3.fromRGB(10
