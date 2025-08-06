@@ -3,7 +3,7 @@
 --// تمت إضافة زر Team Check داخل القائمة
 --// Team Check يكون OFF افتراضياً
 
-local KEY = "nnnn1100"
+local KEY = "00aa"
 
 local Players = game:GetService("Players")
 local RunService = game:GetService("RunService")
