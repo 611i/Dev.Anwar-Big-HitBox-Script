@@ -3,7 +3,7 @@
 --// تمت إضافة زر Team Check داخل القائمة
 --// Team Check يكون OFF افتراضياً
 
-local KEY = "00gg"
+local KEY = "nah"
 
 local Players = game:GetService("Players")
 local RunService = game:GetService("RunService")
@@ -173,8 +173,6 @@ local function loadHitboxScript()
     teamToggle.MouseButton1Click:Connect(function()
         teamCheck = not teamCheck
         teamToggle.Text = "Team Check: " .. (teamCheck and "ON" or "OFF")
-
-        -- تحديث فوري للحالات حسب التفعيل
         for _, player in ipairs(Players:GetPlayers()) do
             if player ~= localPlayer then
                 local char = player.Character
@@ -250,6 +248,17 @@ title.TextColor3 = Color3.fromRGB(255, 255, 255)
 title.Font = Enum.Font.GothamBold
 title.TextSize = 16
 title.TextWrapped = true
+
+-- 📢 الملاحظة الجديدة
+local note = Instance.new("TextLabel", main)
+note.Size = UDim2.new(1, 0, 0, 30)
+note.Position = UDim2.new(0, 0, 0, 40)
+note.BackgroundTransparency = 1
+note.TextColor3 = Color3.fromRGB(255, 200, 0)
+note.Font = Enum.Font.GothamBold
+note.TextSize = 14
+note.TextWrapped = true
+note.Text = "📢 سوف يتم الغاء نظام المفتاح من الرابط أو سيكون فقط في الديسكورد: https://discord.gg/ypjdng9N"
 
 local box = Instance.new("TextBox", main)
 box.PlaceholderText = "اكتب المفتاح هنا / Enter Key Here"
