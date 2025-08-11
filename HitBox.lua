@@ -297,7 +297,7 @@ end)
 
 copyDiscord.MouseButton1Click:Connect(function()
     if setclipboard then
-        setclipboard("https://discord.gg/Jhdh3DFV")
+        setclipboard("https://discord.gg/ypjdng9N")
         copyDiscord.Text = "✔️ تم النسخ!"
     end
 end)
